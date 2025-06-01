@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매력 분석 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        #app {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .stage {
+            padding: 40px;
+            min-height: 500px;
+        }
+        
+        h2 {
+            color: #5a67d8;
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .category-selection {
+            display: grid;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
+            border-color: #5a67d8;
+            background-color: #f7fafc;
+        }
+        
+        .category-item.selected {
+            border-color: #5a67d8;
+            background-color: #edf2f7;
+        }
+        
+        .category-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #5a67d8;
+        }
+        
+        .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .choices {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .choice-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .choice-item:hover {
+            background-color: #f7fafc;
+            border-color: #5a67d8;
+        }
+        
+        .choice-item.selected {
+            background-color: #edf2f7;
+            border-color: #5a67d8;
+        }
+        
+        .choice-item input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 2px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            min-width: 150px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #718096;
+            margin-right: 10px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #e2e8f0;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .response-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .summary-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #5a67d8;
+        }
+        
+        /* 3단계 성찰 질문 스타일 */
+        .reflection-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .reflection-question-card {
+            background: #fff9f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-left: 5px solid #e53e3e;
+            position: relative;
+        }
+        
+        .reflection-question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .reflection-question-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .reflection-question-number {
+            background: #e53e3e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .reflection-sub-questions {
+            margin-bottom: 20px;
+        }
+        
+        .reflection-sub-question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .reflection-sub-question-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+        
+        .reflection-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 10px;
+        }
+        
+        .reflection-textarea:focus {
+            outline: none;
+            border-color: #5a67d8;
+        }
+        
+        .helper-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .helper-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #4a5568;
+        }
+        
+        .helper-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .helper-btn.skip {
+            background: #fed7d7;
+            border-color: #fc8181;
+            color: #c53030;
+        }
+        
+        .helper-btn.bookmark {
+            background: #fef5e7;
+            border-color: #f6ad55;
+            color: #c05621;
+        }
+        
+        /* 설문조사 스타일 */
+        .survey-section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #5a67d8;
+        }
+        
+        .survey-section-title {
+            color: #2d3748;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .survey-question {
+            margin-bottom: 25px;
+        }
+        
+        .survey-question-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        
+        .rating-scale {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .rating-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 70px;
+        }
+        
+        .rating-item input[type="radio"] {
+            margin: 0;
+            transform: scale(1.3);
+        }
+        
+        .rating-label {
+            font-size: 11px;
+            text-align: center;
+            color: #718096;
+            line-height: 1.2;
+        }
+        
+        .dropdown-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .text-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .text-input:focus, .dropdown-select:focus {
+            outline: none;
+            border-color: #5a67d8;
+        }
+        
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .example-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #48bb78;
+        }
+        
+        .example-label {
+            font-weight: bold;
+            color: #2f855a;
+            margin-bottom: 8px;
+        }
+        
+        .template-step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0fff4;
+            border-radius: 8px;
+            border-left: 3px solid #68d391;
+        }
+        
+        .template-step-title {
+            font-weight: bold;
+            color: #2f855a;
+            margin-bottom: 10px;
+        }
+        
+        .template-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .attraction-keywords {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .attraction-category {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .attraction-category-title {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .attraction-keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .attraction-keyword {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .attraction-keyword:hover {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        /* 매력 키워드 안내 문구 스타일 */
+.attraction-guide {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.attraction-guide-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.attraction-guide-text {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@keyframes sparkle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* 매력 키워드 버튼 강조 스타일 */
+.attraction-keyword-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-size: 16px !important;
+    padding: 12px 20px !important;
+    border-radius: 25px !important;
+    border: none !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    transform: scale(1.05) !important;
+    animation: pulse 2s ease-in-out infinite !important;
+}
+
+.attraction-keyword-btn:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+    50% { box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
+}
+
+/* 답변창과 키워드 컨테이너 */
+.textarea-container {
+    position: relative;
+    margin-top: 15px;
+}
+
+/* 선택된 키워드 표시 영역 */
+.selected-keywords {
+    background: #f8f9fa;
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px 10px 0 0;
+    padding: 12px 15px;
+    min-height: 50px;
+    border-bottom: none;
+}
+
+.keywords-label {
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.keywords-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 20px;
+}
+
+.keyword-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fadeInScale 0.3s ease-out;
+}
+
+.keyword-tag .remove-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.keyword-tag .remove-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 답변창 스타일 수정 */
+.reflection-textarea {
+    border-radius: 0 0 10px 10px !important;
+    border-top: none !important;
+    border: 2px solid #e2e8f0 !important;
+}
+
+.reflection-textarea:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* 키워드가 없을 때 표시 */
+.no-keywords {
+    color: #a0aec0;
+    font-style: italic;
+    font-size: 12px;
+}
+/* CSS 스타일 섹션에 추가 */
+@keyframes fadeOutScale {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+/* 기존 CSS에 추가 */
+
+/* 템플릿 모달 개선된 스타일 */
+.template-questions {
+    margin: 20px 0;
+}
+
+.template-question-item {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #5a67d8;
+}
+
+.template-question-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.template-letter {
+    background: #5a67d8;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.template-question-text {
+    font-weight: 500;
+    color: #2d3748;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.template-answer-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.2s ease;
+}
+
+.template-answer-input:focus {
+    outline: none;
+    border-color: #5a67d8;
+    box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+}
+
+.template-answer-input::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.template-use-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.template-use-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+}
+
+.template-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* 기존 CSS의 .template-footer 다음에 추가 */
+
+/* 선택된 매력 키워드 스타일 */
+.attraction-keyword.selected {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+    color: white !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+}
+
+.attraction-keyword.selected:hover {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+    transform: scale(1.08);
+}
+
+/* 선택 완료 버튼 스타일 */
+.attraction-complete-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.attraction-complete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.attraction-complete-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 1단계: 카테고리 선택 -->
+        <div id="stage1" class="stage">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 20%"></div>
+            </div>
+            
+            <h2>1단계: 중요한 매력 선택</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+                다음 7가지 매력 중에서 당신이 가장 중요하게 생각하거나 더 탐색하고 싶은 <strong>1~3개</strong>를 선택해주세요.
+            </p>
+            
+            <div class="category-selection" id="categorySelection">
+                <div class="category-item" data-category="이해심 및 공감 능력">
+                    <input type="checkbox" value="이해심 및 공감 능력">
+                    <div>
+                        <strong>이해심 및 공감 능력</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            타인의 감정을 이해하고 공감하는 능력
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="성실성 및 책임감">
+                    <input type="checkbox" value="성실성 및 책임감">
+                    <div>
+                        <strong>성실성 및 책임감</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            맡은 일에 대한 성실함과 책임지는 자세
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="지적 호기심 및 개방성">
+                    <input type="checkbox" value="지적 호기심 및 개방성">
+                    <div>
+                        <strong>지적 호기심 및 개방성</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            새로운 것에 대한 호기심과 열린 마음
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="정서적 안정 및 자기 인식">
+                    <input type="checkbox" value="정서적 안정 및 자기 인식">
+                    <div>
+                        <strong>정서적 안정 및 자기 인식</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            감정 조절 능력과 자신에 대한 이해
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="도덕성 및 양심">
+                    <input type="checkbox" value="도덕성 및 양심">
+                    <div>
+                        <strong>도덕성 및 양심</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            올바른 가치관과 윤리적 판단력
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="유머감각 및 사교성">
+                    <input type="checkbox" value="유머감각 및 사교성">
+                    <div>
+                        <strong>유머감각 및 사교성</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            유머와 사람들과의 원활한 소통 능력
+                        </div>
+                    </div>
+                </div>
+                <div class="category-item" data-category="목표 지향성 및 야망">
+                    <input type="checkbox" value="목표 지향성 및 야망">
+                    <div>
+                        <strong>목표 지향성 및 야망</strong>
+                        <div style="font-size: 14px; color: #718096; margin-top: 5px;">
+                            명확한 목표 의식과 성취에 대한 열망
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="error-message" id="stage1Error" style="display: none;"></div>
+            <button class="btn" onclick="proceedToStage2Situation()" id="stage1Btn">상황 질문으로</button>
+        </div>
+
+        <!-- 2A단계: 상황 질문 -->
+        <div id="stage2Situation" class="stage" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%"></div>
+            </div>
+            
+            <h2>2단계: 상황 질문</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+                다양한 상황에서 당신의 선택을 알려주세요. 총 4개의 상황 질문입니다.
+            </p>
+            
+            <div id="situationQuestionsContainer"></div>
+            
+            <div class="error-message" id="stage2SituationError" style="display: none;"></div>
+            <button class="btn" onclick="proceedToStage2Personality()" id="stage2SituationBtn">성향 질문으로</button>
+        </div>
+
+        <!-- 2B단계: 성향 질문 -->
+        <div id="stage2Personality" class="stage" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+            </div>
+            
+            <h2>2단계: 성향 질문</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+                당신의 성향을 파악하는 질문입니다. 총 4개의 성향 질문입니다.
+            </p>
+            
+            <div id="personalityQuestionsContainer"></div>
+            
+            <div class="error-message" id="stage2PersonalityError" style="display: none;"></div>
+            <button class="btn" onclick="showResponseSummary()" id="stage2PersonalityBtn" disabled>응답 확인하기</button>
+        </div>
+
+        <!-- 2단계: 응답 확인 -->
+        <div id="responseSummary" class="stage" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%"></div>
+            </div>
+            
+            <h2>당신의 응답 요약</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+                지금까지의 응답을 확인해보세요. 마음에 들지 않는다면 이전 단계로 돌아가 수정할 수 있습니다.
+            </p>
+            
+            <div class="response-summary" id="summaryContent"></div>
+            
+            <div style="text-align: center;">
+                <button class="btn btn-secondary" onclick="backToStage2Personality()">이전 단계</button>
+                <button class="btn" onclick="proceedToStage3Page1()">성찰 질문으로</button>
+            </div>
+        </div>
+
+        <!-- 3단계: 성찰 질문 - 페이지 1 -->
+       <!-- 3단계: 성찰 질문 - 페이지 1 -->
+<div id="stage3_page1" class="stage" style="display:none;">
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 80%"></div>
+    </div>
+    
+    <h2>3단계: 경험 탐구 (1/2)</h2>
+    <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+        나의 보람찬 경험을 통해 매력을 발견해보세요.
+    </p>
+    
+    <div id="reflectionContainer1"></div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn btn-secondary" onclick="backToResponseSummary()">이전</button>
+        <button class="btn" onclick="proceedToStage3Page2()">다음 단계</button>
+    </div>
+</div>
+
+<!-- 3단계: 성찰 질문 - 페이지 2 -->
+<div id="stage3_page2" class="stage" style="display:none;">
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 90%"></div>
+    </div>
+    
+    <h2>3단계: 개인화 질문 (2/2)</h2>
+    <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+        당신에게 맞는 심층 탐구 질문입니다.
+    </p>
+    
+    <div id="reflectionContainer2"></div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn btn-secondary" onclick="backToStage3Page1()">이전</button>
+        <button class="btn" onclick="proceedToSurvey()">설문조사로</button>
+    </div>
+</div>
+     <!-- 설문조사 페이지 -->
+        <div id="surveyStage" class="stage" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%"></div>
+            </div>
+            
+            <h2>📋 ASTER 프로그램 만족도 설문</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #718096;">
+                프로그램 개선을 위해 몇 가지 질문에 답해주세요. (약 3분 소요)
+            </p>
+            
+            <div id="surveyContainer"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="backToStage3Page4()">테스트로 돌아가기</button>
+                <button class="btn" onclick="submitSurvey()" id="surveySubmitBtn" disabled>설문 제출하기</button>
+            </div>
+        </div>
+
+        <!-- 최종 완료 페이지 -->
+        <div id="finalComplete" class="stage" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            <h2>🎉 모든 과정이 완료되었습니다!</h2>
+            <div id="completeContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달들 -->
+    <!-- 예시 모달 -->
+    <div id="exampleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">답변 예시</div>
+                <button class="modal-close" onclick="closeModal('exampleModal')">&times;</button>
+            </div>
+            <div id="exampleContent"></div>
+        </div>
+    </div>
+
+ 
+
+    <!-- 매력 키워드 모달 -->
+    <div id="attractionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">매력 키워드 참고</div>
+            <button class="modal-close" onclick="closeModal('attractionModal')">&times;</button>
+        </div>
+        <div id="attractionContent"></div>
+        <!-- 선택 완료 버튼 추가 -->
+        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <button class="attraction-complete-btn" onclick="completeKeywordSelection()">
+                ✅ 선택 완료
+            </button>
+        </div>
+    </div>
+</div>
+
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📝 글쓰기 템플릿</div>
+                <button class="modal-close" onclick="closeModal('templateModal')">&times;</button>
+            </div>
+            <div id="templateContent"></div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- 🔥 여기에 Firebase 코드를 추가하세요! -->
+    <script type="module">
+        // Firebase 설정
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5bHCxTRXx05hyZ8sKZZ4MB5pDdkboD6g",
+            authDomain: "aster-423c7.firebaseapp.com",
+            projectId: "aster-423c7",
+            storageBucket: "aster-423c7.firebasestorage.app",
+            messagingSenderId: "1091386634099",
+            appId: "1:1091386634099:web:2562deb2939b933e691f06",
+            measurementId: "G-DZHTQLB0L0"
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 전역으로 사용할 수 있도록 window 객체에 추가
+        window.firebaseDB = db;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseOrderBy = orderBy;
+        window.firebaseQuery = query;
+        
+        console.log("Firebase 초기화 완료!");
+    </script>
+
+        <script src="js/testLogic.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('페이지 로드 완료');
+            
+            // 1단계 타이머 시작
+            if (typeof startStage1Timer === 'function') {
+                startStage1Timer();
+                console.log('1단계 타이머 자동 시작');
+            }
+        });
+    </script>
+</body>
+</html>
