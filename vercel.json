@@ -2,15 +2,15 @@
   "routes": [
     {
       "src": "/",
-      "dest": "/attraction%20test/test.html"
+      "dest": "/index.html"
     },
     {
       "src": "/admin",
-      "dest": "/attraction%20test/admin.html"
+      "dest": "/admin.html"
     },
     {
       "src": "/test",
-      "dest": "/attraction%20test/test.html"
+      "dest": "/admin.html"
     }
   ]
 }
